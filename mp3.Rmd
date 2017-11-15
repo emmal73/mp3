@@ -9,8 +9,22 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r, include = FALSE, message = FALSE}
 library(mdsr)
 library(RMySQL)
+library(tidyverse)
 db <- dbConnect_scidb(dbname = "imdb")
 ```
+
+```{r}
+num_genres <- db %>%
+  dbGetQuery("SELECT title.title, production_year, info, sum(1) AS N
+FROM movie_info
+JOIN title ON title.id = movie_info.movie_id
+WHERE info_type_id = 3 AND kind_id = 1
+GROUP BY title.id;")
+ggplot(data = num_genres, aes(x = production_year)) +
+  geom_histogram()
+```
+
+
