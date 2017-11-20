@@ -16,6 +16,11 @@ library(tidyverse)
 db <- dbConnect_scidb(dbname = "imdb")
 ```
 
+##Genre Multiplicity
+
+In this project, we looked at 
+
+
 ```{r}
 num_genres <- db %>%
   dbGetQuery("SELECT title.title, title.id, production_year, info, sum(1) AS N
@@ -30,7 +35,7 @@ ggplot(data = num_genres, aes(x = production_year)) +
 
 ```{r}
 num_year <- db %>%
-  dbGetQuery("SELECT title, title.id, production_year, info, sum(1) AS N, COUNT(DISTINCT title.id) 
+  dbGetQuery("SELECT production_year, info, sum(1) AS N, COUNT(DISTINCT title.id) 
 FROM movie_info
 JOIN title ON title.id = movie_info.movie_id
 WHERE info_type_id = 3 AND kind_id = 1
@@ -39,15 +44,22 @@ ORDER BY title, title.id;")
 ```
 
 ```{r}
-num_year %>%
-  summarize(avg_movies_per_year = mean(N))
 joined <- num_genres %>%
-  inner_join(num_year, by = "id")
+  inner_join(num_year, by = "production_year") %>%
+  filter(production_year <= 2026) %>%
+  group_by(production_year) %>%
+  summarize(avg_genres = mean(N.x))
 #It won't let me rename those ridiculous columns
 ```
 
 ```{r}
-ggplot(data = joined, aes(x = production_year.y)) +
-  geom_histogram()
+ggplot(data = joined, aes(x = production_year, y = avg_genres)) +
+  geom_line(size = 1.2) +
+  geom_vline(xintercept = 2017, col = "blue", linetype = 3) +
+  geom_vline(xintercept = 1947, col = "blue", linetype = 3) +
+  ylab("Average Number of Genres per Movie") +
+  xlab("Production Year")
 ```
 
+
+GitHub Repository: https://github.com/emmal73/mp3
