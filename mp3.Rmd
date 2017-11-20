@@ -21,7 +21,7 @@ num_genres <- db %>%
   dbGetQuery("SELECT title.title, production_year, info, sum(1) AS N
 FROM movie_info
 JOIN title ON title.id = movie_info.movie_id
-WHERE info_type_id = 3 AND kind_id = 1 AND title.production_year IS NOT NULL AND title.production_year <= 2026
+WHERE info_type_id = 3 AND kind_id = 1
 GROUP BY title.id;")
 ggplot(data = num_genres, aes(x = production_year)) +
   geom_histogram()
@@ -35,4 +35,3 @@ JOIN title ON title.id = movie_info.movie_id
 WHERE info_type_id = 3 AND kind_id = 1
 GROUP BY production_year;")
 ```
-
