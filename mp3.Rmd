@@ -18,21 +18,36 @@ db <- dbConnect_scidb(dbname = "imdb")
 
 ```{r}
 num_genres <- db %>%
-  dbGetQuery("SELECT title.title, production_year, info, sum(1) AS N
+  dbGetQuery("SELECT title.title, title.id, production_year, info, sum(1) AS N
 FROM movie_info
 JOIN title ON title.id = movie_info.movie_id
 WHERE info_type_id = 3 AND kind_id = 1
-GROUP BY title.id;")
+GROUP BY title.id
+ORDER BY title, title.id;")
 ggplot(data = num_genres, aes(x = production_year)) +
   geom_histogram()
 ```
 
 ```{r}
 num_year <- db %>%
-  dbGetQuery("SELECT title, production_year, info, sum(1) AS N
+  dbGetQuery("SELECT title, title.id, production_year, info, sum(1) AS N, COUNT(DISTINCT title.id) 
 FROM movie_info
 JOIN title ON title.id = movie_info.movie_id
 WHERE info_type_id = 3 AND kind_id = 1
-GROUP BY production_year;")
+GROUP BY production_year
+ORDER BY title, title.id;")
+```
+
+```{r}
+num_year %>%
+  summarize(avg_movies_per_year = mean(N))
+joined <- num_genres %>%
+  inner_join(num_year, by = "id")
+#It won't let me rename those ridiculous columns
+```
+
+```{r}
+ggplot(data = joined, aes(x = production_year.y)) +
+  geom_histogram()
 ```
 
