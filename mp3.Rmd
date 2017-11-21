@@ -29,18 +29,18 @@ JOIN title ON title.id = movie_info.movie_id
 WHERE info_type_id = 3 AND kind_id = 1
 GROUP BY title.id
 ORDER BY title, title.id;")
-ggplot(data = num_genres, aes(x = production_year)) +
-  geom_histogram()
+#This query makes use of the index on info_type_id in the movie_info table
 ```
 
 ```{r}
 num_year <- db %>%
-  dbGetQuery("SELECT production_year, info, sum(1) AS N, COUNT(DISTINCT title.id) 
+  dbGetQuery("SELECT production_year, info, sum(1) AS N
 FROM movie_info
 JOIN title ON title.id = movie_info.movie_id
 WHERE info_type_id = 3 AND kind_id = 1
 GROUP BY production_year
 ORDER BY title, title.id;")
+#This query also uses the index on the info_type_id in the movie_info table
 ```
 
 ```{r}
@@ -49,14 +49,16 @@ joined <- num_genres %>%
   filter(production_year <= 2026) %>%
   group_by(production_year) %>%
   summarize(avg_genres = mean(N.x))
-#It won't let me rename those ridiculous columns
+#Here we combined the resulting tables from the above queries, filtered out any film with a production year greater than 2026 (because of the \href{http://www.imdb.com/title/tt5174640/}{film to be released in 2115}), and found the average number of genres.
 ```
 
 ```{r}
 ggplot(data = joined, aes(x = production_year, y = avg_genres)) +
   geom_line(size = 1.2) +
-  geom_vline(xintercept = 2017, col = "blue", linetype = 3) +
-  geom_vline(xintercept = 1947, col = "blue", linetype = 3) +
+  geom_vline(xintercept = 2017, col = "blue", linetype = 2) +
+  geom_text(aes(label = "2017", x = 2012, y = 3.5)) +
+  geom_vline(xintercept = 1947, col = "blue", linetype = 2) +
+  geom_text(aes(label = "1947", x = 1942, y = 3.5)) +
   ylab("Average Number of Genres per Movie") +
   xlab("Production Year")
 ```
