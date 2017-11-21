@@ -66,7 +66,8 @@ ggplot(data = joined, aes(x = production_year, y = avg_genres)) +
   geom_point(aes(x = 1947, y = 1.967671), shape = 20, size = 5, col = "cornflowerblue") +
   geom_text(aes(label = "1947", x = 1942, y = 2.25), col = "cornflowerblue") +
   ylab("Average Genres per Movie") +
-  xlab("Production Year") 
+  xlab("Production Year") +
+  scale_x_continuous("", breaks = c(1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020))
 ```
 
 ## Background
