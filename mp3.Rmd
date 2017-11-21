@@ -1,6 +1,6 @@
 ---
 title: "Mini-Project 3"
-author: "Emma Livingston"
+author: "Emma Livingston, Clara Rosenberg, Kara VanAllen"
 date: "November 13, 2017"
 output: html_document
 ---
