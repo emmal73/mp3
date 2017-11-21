@@ -18,7 +18,7 @@ db <- dbConnect_scidb(dbname = "imdb")
 
 ##Genre Multiplicity
 
-In this project, we looked at 
+We are looking at the change in how movies are labeled by genre over time, specifically at the increased number of genres per movie.
 
 
 ## Queries
