@@ -1,6 +1,6 @@
 ---
 title: "Mini-Project 3"
-author: "Emma Livingston"
+author: "Emma Livingston, Clara Rosenberg, Kara VanAllen"
 date: "November 13, 2017"
 output: html_document
 ---
@@ -18,10 +18,12 @@ db <- dbConnect_scidb(dbname = "imdb")
 
 ##Genre Multiplicity
 
-In this project, we looked at 
+We are looking at the change in how movies are labeled by genre over time, specifically at the increased number of genres per movie.
 
 
-```{r}
+## Queries
+
+```{r, message = FALSE}
 num_genres <- db %>%
   dbGetQuery("SELECT title.title, title.id, production_year, info, sum(1) AS N
 FROM movie_info
@@ -30,9 +32,10 @@ WHERE info_type_id = 3 AND kind_id = 1
 GROUP BY title.id
 ORDER BY title, title.id;")
 #This query makes use of the index on info_type_id in the movie_info table
+#Group by movie to find the number of genres per movie
 ```
 
-```{r}
+```{r, message = FALSE}
 num_year <- db %>%
 <<<<<<< HEAD
   dbGetQuery("SELECT production_year, info, sum(1) AS N, COUNT(DISTINCT title.id)
@@ -48,7 +51,11 @@ WHERE info_type_id = 3 AND kind_id = 1
 GROUP BY production_year
 ORDER BY title, title.id;")
 #This query also uses the index on the info_type_id in the movie_info table
+<<<<<<< HEAD
 >>>>>>> c61f56652066e1210c4988f6dae5419a762291cb
+=======
+#Group by production year to find the number of movies per year
+>>>>>>> 35838116c1ccb95e86d98650ba28e9e809987f3e
 ```
 
 ```{r}
@@ -57,16 +64,35 @@ joined <- num_genres %>%
   filter(production_year <= 2026) %>%
   group_by(production_year) %>%
   summarize(avg_genres = mean(N.x))
-#Here we combined the resulting tables from the above queries, filtered out any film with a production year greater than 2026 (because of the \href{http://www.imdb.com/title/tt5174640/}{film to be released in 2115}), and found the average number of genres.
+#Here we combined the resulting tables from the above queries, filtered out any film with a production year greater than 2026 (because of the \href{http://www.imdb.com/title/tt5174640/}{film to be released in 2115}), and found the average number of genres per year.
 ```
+
+## Plot: Average Genres per Movie Over Time
 
 ```{r}
 ggplot(data = joined, aes(x = production_year, y = avg_genres)) +
   geom_line(size = 1.2) +
-  geom_vline(xintercept = 2017, col = "blue", linetype = 2) +
-  geom_text(aes(label = "2017", x = 2012, y = 3.5)) +
-  geom_vline(xintercept = 1947, col = "blue", linetype = 2) +
-  geom_text(aes(label = "1947", x = 1942, y = 3.5)) +
-  ylab("Average Number of Genres per Movie") +
-  xlab("Production Year")
+  geom_point(aes(x = 2017, y = 2.018338), shape = 20, size = 5, col = "cornflowerblue") +
+  geom_text(aes(label = "2017", x = 2012, y = 1.75), col = "cornflowerblue") +
+  geom_point(aes(x = 1947, y = 1.967671), shape = 20, size = 5, col = "cornflowerblue") +
+  geom_text(aes(label = "1947", x = 1942, y = 2.25), col = "cornflowerblue") +
+  ylab("Average Genres per Movie") +
+  xlab("Production Year") +
+  scale_x_continuous("", breaks = c(1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020))
 ```
+<<<<<<< HEAD
+=======
+
+## Background
+
+Two noticeable trends in the graph are the slow decrease in the average genres per movie per year starting around the 1950s and the sharp increase in the figure for recent years. One possible explanation for the former is that this is the time that television was becoming increasingly popular, meaning that the entertainment industry's resources were being aimed at a new medium. As a result, films may have become less complex, fitting into fewer genres. As for the later, the sharp 2 genre rise after the year 2017, the lack of movies currently on IMDB set for a production year of past 2018 can account for a majority of that rise. Due to the date being in the future, there is no way to accurately plot what the average is going to be before it happens. The hypothesis was that overall, the number of genres per movie has been increasing in the past few years. To look at our hypothesis, we controlled for the number of movies made per year. It is clear that there has been an upward trend in the number of genres per movie since the early 2000s. 
+
+
+One explanation for the recent uptick is that CGI (computer-generated imagery) became increasingly popular and readily available in the early 2000s. This could have increased the accessibility of movie production. Also in the early 2000s the American public became more receptive to new types of genres such as foreign language films and documentaries. If a film can realistically fit into multiple genres, it is more likely to have an appeal to a broader audience.
+
+## Alternative Hypothesis
+
+Another possible explanation, which would explain both trends, is that this data source, IMDB, is user-generated. It is very likely that more people are submitting information, including genres, today than they were five or ten years ago, and most people have seen a greater quantity of recent movies than older movies. On the other hand, it is possible that the kind of person who contributes to IMDB is the kind of person who watches movies from certain years, giving the database more information about movies from these years and making it seem as if the average number of genres per movie is greater.
+
+GitHub Repository: https://github.com/emmal73/mp3
+>>>>>>> 35838116c1ccb95e86d98650ba28e9e809987f3e
