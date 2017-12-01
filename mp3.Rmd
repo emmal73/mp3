@@ -37,13 +37,6 @@ ORDER BY title, title.id;")
 
 ```{r, message = FALSE}
 num_year <- db %>%
-<<<<<<< HEAD
-  dbGetQuery("SELECT production_year, info, sum(1) AS N, COUNT(DISTINCT title.id)
-FROM movie_info
-JOIN title ON title.id = movie_info.movie_id
-WHERE info_type_id = 3 AND kind_id = 1
-GROUP BY production_year;")
-=======
   dbGetQuery("SELECT production_year, info, sum(1) AS N
 FROM movie_info
 JOIN title ON title.id = movie_info.movie_id
@@ -51,11 +44,7 @@ WHERE info_type_id = 3 AND kind_id = 1
 GROUP BY production_year
 ORDER BY title, title.id;")
 #This query also uses the index on the info_type_id in the movie_info table
-<<<<<<< HEAD
->>>>>>> c61f56652066e1210c4988f6dae5419a762291cb
-=======
 #Group by production year to find the number of movies per year
->>>>>>> 35838116c1ccb95e86d98650ba28e9e809987f3e
 ```
 
 ```{r}
