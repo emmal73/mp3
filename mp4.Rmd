@@ -1,5 +1,5 @@
 ---
-title: "Mini Project 4"
+title: "The movie industry has been rejecting single labels since the 1950s"
 author: "Emma Livingston"
 date: "December 1, 2017"
 output: html_document
@@ -14,6 +14,8 @@ db <- dbConnect_scidb(dbname = "imdb")
 ```
 
 Have films gotten more greedy in their pursuit of the perfect audience? By sorting a movie into genres, production companies are better able to attract viewers who know they will enjoy the movie, and dissuade viewers who may not be interested. We looked at the number of genres attached to movies over time to find out.
+
+Film producers know that not everyone likes every genre, and they don't want to alienate potential new viewers by only having their movie fit in one box. For example, your typical superhero action movie has a romantic subplot, some comic relief, and a sci-fi or fantasy origin story. However, there's a difference between it being called an action movie and it being called a sci-fi/fantasy action rom-com. The former sounds fairly typical, and the latter sounds both like it has something for everyone and like it's a bit confused. But it might attract a wider audience by being firmly placed into all these different genres. And over time, producers have been learning this, since the average movie has been placed into an increasing number of genres since the 1950s.
 
 ```{r}
 num_genres <- db %>%
