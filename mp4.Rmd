@@ -2,10 +2,13 @@
 title: "The movie industry has been rejecting single labels since the 1950s"
 author: "Emma Livingston"
 date: "December 1, 2017"
-output: html_document
+output:
+  html_document:
+    code_folding: hide
 ---
 
-```{r setup, include=FALSE}
+
+```{r setup, include=FALSE, message = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(mdsr)
 library(RMySQL)
