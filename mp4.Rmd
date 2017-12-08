@@ -67,12 +67,13 @@ ggplot(data = joined, aes(x = production_year, y = avg_genres)) +
 ```{r}
 joined_bechdel <- num_genres %>%
   inner_join(bechdel, by = "title")
-profit <- ggplot(data = joined_bechdel, aes(x = year, y = domgross_2013 - budget_2013, col = N, label = title)) +
-  geom_smooth(size = 1.2, col = "cornflowerblue") +
-  geom_point(alpha = 0.3) +
-  scale_color_distiller(palette = "YlGnBu") +
+profit <- ggplot(data = joined_bechdel, aes(x = year, y = domgross_2013 - budget_2013, color = N, label = title)) +
+  geom_smooth(size = 1.2, col = "black") +
+  geom_point(alpha = 0.5) +
+  scale_color_distiller(palette = "YlGnBu", direction = "-YlGnBu") +
   xlab("Year") +
-  ylab("Profit in 2013 Dollars")
+  ylab("Profit in 2013 Dollars") +
+  theme(panel.background = element_rect(fill = "dark grey"))
 ggplotly(profit)
 ```
 
