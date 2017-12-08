@@ -1,26 +1,36 @@
 ---
-title: "Mini Project 4"
+title: "The movie industry has been rejecting single labels since the 1950s"
 author: "Emma Livingston"
 date: "December 1, 2017"
-output: html_document
+output:
+  html_document:
+    code_folding: hide
 ---
 
-```{r setup, include=FALSE}
+
+```{r setup, include=FALSE, message = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(mdsr)
 library(RMySQL)
 library(tidyverse)
 db <- dbConnect_scidb(dbname = "imdb")
+library(fivethirtyeight)
+library(plotly)
+library(RColorBrewer)
 ```
 
 Have films gotten more greedy in their pursuit of the perfect audience? By sorting a movie into genres, production companies are better able to attract viewers who know they will enjoy the movie, and dissuade viewers who may not be interested. We looked at the number of genres attached to movies over time to find out.
 
+Film producers know that not everyone likes every genre, and they don't want to alienate potential new viewers by only having their movie fit in one box. For example, your typical superhero action movie has a romantic subplot, some comic relief, and a sci-fi or fantasy origin story. However, there's a difference between it being called an action movie and it being called a sci-fi/fantasy action rom-com. The former sounds fairly typical, and the latter sounds both like it has something for everyone and like it's a bit confused. But it might attract a wider audience by being firmly placed into all these different genres. And over time, producers have been learning this, since the average movie has been placed into an increasing number of genres since the 1950s.
+
 ```{r}
 num_genres <- db %>%
-  dbGetQuery("SELECT title.title, title.id, production_year, info, sum(1) AS N
-FROM movie_info
-JOIN title ON title.id = movie_info.movie_id
-WHERE info_type_id = 3 AND kind_id = 1
+  dbGetQuery("SELECT title.title, title.id, production_year, mi1.info AS genre, mi2.info AS country, sum(1) AS N
+FROM title
+JOIN movie_info AS mi1 ON title.id = mi1.movie_id
+JOIN movie_info AS mi2 ON title.id = mi2.movie_id
+WHERE mi1.info_type_id = 3 AND kind_id = 1 
+AND mi2.info_type_id = 8 AND mi2.info = 'USA'
 GROUP BY title.id
 ORDER BY title, title.id;")
 #This query makes use of the index on info_type_id in the movie_info table
@@ -45,12 +55,24 @@ joined <- num_genres %>%
 
 ggplot(data = joined, aes(x = production_year, y = avg_genres)) +
   geom_line(size = 1.2) +
-  geom_point(aes(x = 2017, y = 2.018338), shape = 20, size = 5, col = "cornflowerblue") +
+  geom_point(aes(x = 2017, y = 2.077276), shape = 20, size = 5, col = "cornflowerblue") +
   geom_text(aes(label = "2017", x = 2012, y = 1.75), col = "cornflowerblue") +
-  geom_point(aes(x = 1947, y = 1.967671), shape = 20, size = 5, col = "cornflowerblue") +
+  geom_point(aes(x = 1947, y = 2.473159), shape = 20, size = 5, col = "cornflowerblue") +
   geom_text(aes(label = "1947", x = 1942, y = 2.25), col = "cornflowerblue") +
   ylab("Average Genres per Movie") +
   xlab("Production Year") +
-  scale_x_continuous("", breaks = c(1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020))
+  scale_x_continuous("", breaks = seq(from = 1880, to = 2020, by = 20))
 ``` 
+
+```{r}
+joined_bechdel <- num_genres %>%
+  inner_join(bechdel, by = "title")
+profit <- ggplot(data = joined_bechdel, aes(x = year, y = domgross_2013 - budget_2013, col = N, label = title)) +
+  geom_smooth(size = 1.2, col = "cornflowerblue") +
+  geom_point(alpha = 0.3) +
+  scale_color_distiller(palette = "YlGnBu") +
+  xlab("Year") +
+  ylab("Profit in 2013 Dollars")
+ggplotly(profit)
+```
 
