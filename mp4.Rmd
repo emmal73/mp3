@@ -17,11 +17,16 @@ db <- dbConnect_scidb(dbname = "imdb")
 library(fivethirtyeight)
 library(plotly)
 library(RColorBrewer)
+devtools::install_github("benmarwick/wordcountaddin", 
+                         type = "source", dependencies = TRUE)
+wordcountaddin:::text_stats()
 ```
 
 Have films gotten more greedy in their pursuit of the perfect audience? By sorting a movie into genres, production companies are better able to attract viewers who know they will enjoy the movie, and dissuade viewers who may not be interested. We looked at the number of genres attached to movies over time to find out.
 
 Film producers know that not everyone likes every genre, and they don't want to alienate potential new viewers by only having their movie fit in one box. For example, your typical superhero action movie has a romantic subplot, some comic relief, and a sci-fi or fantasy origin story. However, there's a difference between it being called an action movie and it being called a sci-fi/fantasy action rom-com. The former sounds fairly typical, and the latter sounds both like it has something for everyone and like it's a bit confused. But it might attract a wider audience by being firmly placed into all these different genres. And over time, producers have been learning this, since the average movie has been placed into an increasing number of genres since the 1950s.
+
+We started with data from the [IMDb database](/http://www.imdb.com/), which relies on user submissions that go through an [approval process](/https://help.imdb.com/article/contribution/contribution-information/when-will-my-update-be-added/GEKS9SBHDEHBAVC7?ref_=helpms_helpart_inline#). 
 
 ```{r}
 num_genres <- db %>%
@@ -53,7 +58,10 @@ joined <- num_genres %>%
   summarize(avg_genres = mean(N.x))
 #Here we combined the resulting tables from the above queries, filtered out any film with a production year greater than 2026 (because of the \href{http://www.imdb.com/title/tt5174640/}{film to be released in 2115}), and found the average number of genres per year.
 
-ggplot(data = joined, aes(x = production_year, y = avg_genres)) +
+past_joined <- joined %>%
+  filter(production_year <= 2017)
+
+ggplot(data = past_joined, aes(x = production_year, y = avg_genres)) +
   geom_line(size = 1.2) +
   geom_point(aes(x = 2017, y = 2.077276), shape = 20, size = 5, col = "cornflowerblue") +
   geom_text(aes(label = "2017", x = 2012, y = 1.75), col = "cornflowerblue") +
@@ -63,17 +71,34 @@ ggplot(data = joined, aes(x = production_year, y = avg_genres)) +
   xlab("Production Year") +
   scale_x_continuous("", breaks = seq(from = 1880, to = 2020, by = 20))
 ``` 
+```{r}
+future <- joined %>%
+  filter(production_year > 2017)
+print(future)
+```
 
 ```{r}
 joined_bechdel <- num_genres %>%
-  inner_join(bechdel, by = "title")
-profit <- ggplot(data = joined_bechdel, aes(x = year, y = domgross_2013 - budget_2013, color = N, label = title)) +
+  right_join(bechdel, by = "title") %>%
+  filter(production_year == year) %>%
+  mutate(Profit = domgross_2013 - budget_2013) %>%
+  rename(Genres = N)
+profit <- ggplot(data = joined_bechdel, aes(x = year, y = Profit, color = Genres, label = title)) +
   geom_smooth(size = 1.2, col = "black") +
   geom_point(alpha = 0.5) +
   scale_color_distiller(palette = "YlGnBu", direction = "-YlGnBu") +
-  xlab("Year") +
-  ylab("Profit in 2013 Dollars") +
-  theme(panel.background = element_rect(fill = "dark grey"))
+  scale_y_continuous(breaks = seq(from = -500000000, to = 1500000000, by = 500000000), labels = c("-0.5", "0", "0.5", "1.0", "1.5")) + 
+ xlab("Year") +
+ ylab("Profit in 2013 Dollars (billions)") +
+  theme(panel.background = element_rect(fill = "dark grey")) 
 ggplotly(profit)
+```
+
+
+```{r}
+ggplot(joined_bechdel, aes(x = Genres, y = Profit)) +
+  geom_jitter() +
+  scale_y_continuous(breaks = seq(from = -500000000, to = 1500000000, by = 500000000), labels = c("-0.5", "0", "0.5", "1.0", "1.5")) +
+  ylab("Profit in 2013 Dollars (billions)")
 ```
 
