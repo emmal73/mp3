@@ -69,6 +69,8 @@ ggplot(data = joined, aes(x = production_year, y = avg_genres)) +
   xlab("Production Year") +
   scale_x_continuous("", breaks = c(1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020))
 ```
+<<<<<<< HEAD
+=======
 
 ## Background
 
@@ -82,3 +84,4 @@ One explanation for the recent uptick is that CGI (computer-generated imagery) b
 Another possible explanation, which would explain both trends, is that this data source, IMDB, is user-generated. It is very likely that more people are submitting information, including genres, today than they were five or ten years ago, and most people have seen a greater quantity of recent movies than older movies. On the other hand, it is possible that the kind of person who contributes to IMDB is the kind of person who watches movies from certain years, giving the database more information about movies from these years and making it seem as if the average number of genres per movie is greater.
 
 GitHub Repository: https://github.com/emmal73/mp3
+>>>>>>> 35838116c1ccb95e86d98650ba28e9e809987f3e
