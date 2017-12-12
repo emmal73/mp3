@@ -24,34 +24,7 @@ Have films gotten more greedy in their pursuit of an audience? By sorting a movi
 
 Film producers know that not everyone likes every genre, and they don't want to alienate potential new viewers by only having their movie fit in one box. For example, your typical superhero action movie has a romantic subplot, some comic relief, and a sci-fi or fantasy origin story. However, there's a difference between it being called an action movie and it being called a sci-fi/fantasy action rom-com. The former sounds fairly typical, and the latter sounds both like it has something for everyone and like it's a bit confused. But it might attract a wider audience by being firmly placed into all these different genres. And over time, producers have been learning this, since the average Hollywood movie has been placed into an increasing number of genres since the 1990s.
 
-We started with data from the [IMDb database](/http://www.imdb.com/), which relies on user submissions that go through an [approval process](/https://help.imdb.com/article/contribution/contribution-information/when-will-my-update-be-added/GEKS9SBHDEHBAVC7?ref_=helpms_helpart_inline#). 
-
-![title for image](link to image){width = 300px}, this also works with a gif
-[text](link) - you can inspect this element, and change the color in the a{} element using something like #ff0000, 
-
-CSS things:
-
-<style>
-body{
-  font-size: 15px;
-  font-family: Arial;
-}
-</style>
- 
-Right click on anything in an html file - inspect element - font-family, font-size
-all comes in the tag body{}
-
-for data tables = df_print: paged
-or using package DT use datatable function
-
-in ggplot +
-labs("Title of my graph", subtitle = "additional info in subtitle", caption = "caption")
-
-warning = FALSE might be your friend
-
-footnote [^1]
-
-[^1] text of the footnote (will show up at the bottom of the document)
+We started with data from the [IMDb database](/http://www.imdb.com/), which relies on user submissions that go through an [approval process](/https://help.imdb.com/article/contribution/contribution-information/when-will-my-update-be-added/GEKS9SBHDEHBAVC7?ref_=helpms_helpart_inline#).
 
 ```{r}
 num_genres <- db %>%
@@ -85,22 +58,9 @@ joined <- num_genres %>%
 
 past_joined <- joined %>%
   filter(production_year <= 2017)
-
-ggplot(data = past_joined, aes(x = production_year, y = avg_genres)) +
-  geom_line(size = 1.2) +
-  geom_point(aes(x = 2017, y = 2.077276), shape = 20, size = 5, col = "cornflowerblue") +
-  geom_text(aes(label = "2017", x = 2012, y = 1.75), col = "cornflowerblue") +
-  geom_point(aes(x = 1947, y = 2.473159), shape = 20, size = 5, col = "cornflowerblue") +
-  geom_text(aes(label = "1947", x = 1942, y = 2.25), col = "cornflowerblue") +
-  ylab("Average Genres per Movie") +
-  xlab("Production Year") +
-  scale_x_continuous("", breaks = seq(from = 1880, to = 2020, by = 20))
-``` 
-```{r}
-future <- joined %>%
-  filter(production_year > 2017)
-print(future)
 ```
+
+By combining that data with a [dataset](/https://fivethirtyeight.com/features/the-dollar-and-cents-case-against-hollywoods-exclusion-of-women/)[^1] that has information on the profits each movie made, we were able to come up with a plot that included both the profit and the number of genres. 
 
 ```{r}
 joined_bechdel <- num_genres %>%
@@ -119,6 +79,40 @@ profit <- ggplot(data = joined_bechdel, aes(x = year, y = Profit, color = Genres
 ggplotly(profit)
 ```
 
+While [box office](/https://www.the-numbers.com/market/) revenues are increasing, the number of ticket sales has been diving since the early 2000s, and the profits have leveled off as well. So if you are a movie producer in this seemingly bleak landscape, you have probably started looking to past successes of Hollywood for inspiration on how to pad your pockets. (INSERT SOME STUFF HERE ABOUT THE GOLDEN AGE OF HOLLYWOOD).
+
+```{r}
+ggplot(data = past_joined, aes(x = production_year, y = avg_genres)) +
+  geom_line(size = 1.2) +
+  geom_point(aes(x = 2017, y = 2.077276), shape = 20, size = 5, col = "cornflowerblue") +
+  geom_text(aes(label = "2017", x = 2012, y = 1.75), col = "cornflowerblue") +
+  geom_point(aes(x = 1947, y = 2.473159), shape = 20, size = 5, col = "cornflowerblue") +
+  geom_text(aes(label = "1947", x = 1942, y = 2.25), col = "cornflowerblue") +
+  ylab("Average Genres per Movie") +
+  xlab("Production Year") +
+  scale_x_continuous("", breaks = seq(from = 1880, to = 2020, by = 20))
+``` 
+
+(SOME GOOD EXPLANATION OF THIS GRAPH)
+
+
+So the number of genre labels each movie gets has been growing overall. And looking at the next few years, that trend is predicted to skyrocket, according to the movies already entered in IMDb.[^2]
+
+[^2] Any movies that haven't come out yet that are already on IMDb are likely sequels that already have release dates. These data are might not be representative of the trends that we will see once those dates arrive, but it is valuable to see where production studios believe they are headed.
+
+
+```{r}
+future <- joined %>%
+  filter(production_year > 2017)
+print(future)
+```
+
+So from a marketing point-of-view, it makes sense to try to fit your movie into as many genres as you can to draw in the biggest audience possible to up those ticket sales. More genres equals more money, right? Not necessarily.
+
+
+[^1] This data comes from a combination of [bechdeltest.com](/http://bechdeltest.com/) and [www.the-numbers.com/](/https://www.the-numbers.com/), which we have access to through a previous project. This data is only inclusive of movies on both websites, meaning that it is not all encompassing. On top of that, the only movies in the graphs involving profit must be in both the `bechdel` dataset and the IMDb database. 
+
+
 
 ```{r}
 ggplot(joined_bechdel, aes(x = Genres, y = Profit)) +
@@ -126,4 +120,7 @@ ggplot(joined_bechdel, aes(x = Genres, y = Profit)) +
   scale_y_continuous(breaks = seq(from = -500000000, to = 1500000000, by = 500000000), labels = c("-0.5", "0", "0.5", "1.0", "1.5")) +
   ylab("Profit in 2013 Dollars (billions)")
 ```
+
+If it were true that more genres mean more profit, we would expect to see a much higher profit from the movies that have more genres. Instead, what we see is a peak of profit in the 2-4 genre range. That means that a movie listed as [comedy, romance, and drama](/http://www.imdb.com/title/tt0259446/?ref_=ttls_li_tt) is likely to do better than a movie listed as an [action-comedy-crime-fantasy-horror-mystery-Sci-Fi-thriller](/http://www.imdb.com/title/tt1013860/). 
+
 
