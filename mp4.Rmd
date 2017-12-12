@@ -5,6 +5,7 @@ date: "December 1, 2017"
 output:
   html_document:
     code_folding: hide
+ #   theme: make it look different
 ---
 
 
@@ -17,9 +18,6 @@ db <- dbConnect_scidb(dbname = "imdb")
 library(fivethirtyeight)
 library(plotly)
 library(RColorBrewer)
-devtools::install_github("benmarwick/wordcountaddin", 
-                         type = "source", dependencies = TRUE)
-wordcountaddin:::text_stats()
 ```
 
 Have films gotten more greedy in their pursuit of the perfect audience? By sorting a movie into genres, production companies are better able to attract viewers who know they will enjoy the movie, and dissuade viewers who may not be interested. We looked at the number of genres attached to movies over time to find out.
@@ -27,6 +25,33 @@ Have films gotten more greedy in their pursuit of the perfect audience? By sorti
 Film producers know that not everyone likes every genre, and they don't want to alienate potential new viewers by only having their movie fit in one box. For example, your typical superhero action movie has a romantic subplot, some comic relief, and a sci-fi or fantasy origin story. However, there's a difference between it being called an action movie and it being called a sci-fi/fantasy action rom-com. The former sounds fairly typical, and the latter sounds both like it has something for everyone and like it's a bit confused. But it might attract a wider audience by being firmly placed into all these different genres. And over time, producers have been learning this, since the average movie has been placed into an increasing number of genres since the 1950s.
 
 We started with data from the [IMDb database](/http://www.imdb.com/), which relies on user submissions that go through an [approval process](/https://help.imdb.com/article/contribution/contribution-information/when-will-my-update-be-added/GEKS9SBHDEHBAVC7?ref_=helpms_helpart_inline#). 
+
+![title for image](link to image){width = 300px}, this also works with a gif
+[text](link) - you can inspect this element, and change the color in the a{} element using something like #ff0000, 
+
+CSS things:
+
+<style>
+body{
+  font-size: 15px;
+  font-family: Arial;
+}
+</style>
+ 
+Right click on anything in an html file - inspect element - font-family, font-size
+all comes in the tag body{}
+
+for data tables = df_print: paged
+or using package DT use datatable function
+
+in ggplot +
+labs("Title of my graph", subtitle = "additional info in subtitle", caption = "caption")
+
+warning = FALSE might be your friend
+
+footnote [^1]
+
+[^1] text of the footnote (will show up at the bottom of the document)
 
 ```{r}
 num_genres <- db %>%
