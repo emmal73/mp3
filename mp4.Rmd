@@ -95,6 +95,9 @@ ggplot(data = past_joined, aes(x = production_year, y = avg_genres)) +
 
 (SOME GOOD EXPLANATION OF THIS GRAPH)
 
+Some of the big changes on the graph aren't that surprising when put into historical context. For example, take the steady decline of average genres per movie in the late 1950s and 60s. This is when television became an important form of entertainment, and it uses the same kinds of resources as movies do. With a boom in TV, it makes sense that movies would be less complex for a while.
+
+The recent rise in genres per movie can also be explained by historical trends as well. The last steady rise in this number was from the 1920s and 30s, which could be called the golden age of cinema, with new innovations such as sound and color. With movie profits being far from on the rise, Hollywood producers could be trying to imitate this success.
 
 So the number of genre labels each movie gets has been growing overall. And looking at the next few years, that trend is predicted to skyrocket, according to the movies already entered in IMDb.[^2]
 
