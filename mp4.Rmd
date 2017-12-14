@@ -1,11 +1,10 @@
 ---
-title: "The movie industry has been rejecting single labels since the 1950s"
-author: "Emma Livingston"
-date: "December 1, 2017"
+title: "Is *Elf* really a Romance?"
+author: "Emma Livingston, Clara Rosenberg, Kara VanAllen"
+date: "December 14, 2017"
 output:
   html_document:
     code_folding: hide
- #   theme: make it look different
 ---
 
 
@@ -20,13 +19,18 @@ library(plotly)
 library(RColorBrewer)
 ```
 
-Have films gotten more greedy in their pursuit of an audience? By sorting a movie into genres, production companies are better able to attract viewers who know they will enjoy the movie and dissuade viewers who may not be interested. However, if they're selecting more genres, they're doing more of the former and less of the latter. We looked at the number of genres attached to movies over time to find out.
+![*Elf* is listed under Comedy, Family, Fantasy and Romance](/https://images-na.ssl-images-amazon.com/images/M/MV5BMzUxNzkzMzQtYjIxZC00NzU0LThkYTQtZjNhNTljMTA1MDA1L2ltYWdlL2ltYWdlXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_UX182_CR0,0,182,268_AL_.jpg){.class width = 100px} 
 
-Film producers know that not everyone likes every genre, and they don't want to alienate potential new viewers by only having their movie fit in one box. For example, your typical superhero action movie has a romantic subplot, some comic relief, and a sci-fi or fantasy origin story. However, there's a difference between it being called an action movie and it being called a sci-fi/fantasy action rom-com. The former sounds fairly typical, and the latter sounds both like it has something for everyone and like it's a bit confused. But it might attract a wider audience by being firmly placed into all these different genres. And over time, producers have been learning this, since the average Hollywood movie has been placed into an increasing number of genres since the 1990s.
+Have films gotten more greedy in their pursuit of an audience? By sorting a movie into genres, production companies are better able to attract viewers who know they will enjoy the movie and dissuade viewers who may not be interested. Looking[^1] at the number of genres attached to movies over time, we found that more genres does not necessarily mean more money.
+
+[^1]: https://github.com/emmal73/mp3 
+
+Film producers know that not everyone likes every genre, and they don't want to alienate potential new viewers by only having their movie fit in one box. For example, your typical superhero action movie has a romantic subplot, some comic relief, and a sci-fi or fantasy origin story. While these are great subplots in the movie, there's a difference between calling it an action movie and calling it a sci-fi/fantasy action rom-com. The former sounds fairly typical, and the latter sounds both like it has something for everyone and like it's a bit all over the place. A film might attract a wider audience if it is firmly placed into all these different genres. Over time, producers have been learning this, since the average Hollywood movie has been placed into an increasing number of genres since the 1990s.
 
 We started with data from the [IMDb database](/http://www.imdb.com/), which relies on user submissions that go through an [approval process](/https://help.imdb.com/article/contribution/contribution-information/when-will-my-update-be-added/GEKS9SBHDEHBAVC7?ref_=helpms_helpart_inline#).
 
-```{r}
+
+```{r, warning = FALSE, message = FALSE}
 num_genres <- db %>%
   dbGetQuery("SELECT title.title, title.id, production_year, mi1.info AS genre, mi2.info AS country, sum(1) AS N
 FROM title
@@ -60,14 +64,21 @@ past_joined <- joined %>%
   filter(production_year <= 2017)
 ```
 
-By combining that data with a [dataset](/https://fivethirtyeight.com/features/the-dollar-and-cents-case-against-hollywoods-exclusion-of-women/)[^1] that has information on the profits each movie made, we were able to come up with a plot that included both the profit and the number of genres. 
+By combining the IMDb data with a [dataset](/https://fivethirtyeight.com/features/the-dollar-and-cents-case-against-hollywoods-exclusion-of-women/)[^2] that has information on the profits for each movie, we were able to come up with a plot that included both the profit and the number of genres. 
 
-```{r}
+[^2]: This data comes from a combination of [bechdeltest.com](/http://bechdeltest.com/) and [www.the-numbers.com/](/https://www.the-numbers.com/), which we have access to through a previous project. This data is only inclusive of movies on both websites, meaning that it is not all encompassing. On top of that, the only movies in the graphs involving profit must be in both the IMDb database and the `bechdel` subset. 
+
+```{r, warning = FALSE, message = FALSE }
 joined_bechdel <- num_genres %>%
   right_join(bechdel, by = "title") %>%
   filter(production_year == year) %>%
   mutate(Profit = domgross_2013 - budget_2013) %>%
   rename(Genres = N)
+#num_genres %>%
+#  group_by(title) %>%
+#  summarize(N = n()) %>%
+#  filter(N < 1)
+# here we were making sure that there were no movies of the exact same name produced in the same year.
 profit <- ggplot(data = joined_bechdel, aes(x = year, y = Profit, color = Genres, label = title)) +
   geom_smooth(size = 1.2, col = "black") +
   geom_point(alpha = 0.5) +
@@ -79,13 +90,15 @@ profit <- ggplot(data = joined_bechdel, aes(x = year, y = Profit, color = Genres
 ggplotly(profit)
 ```
 
-While [box office](/https://www.the-numbers.com/market/) revenues are increasing, the number of ticket sales has been diving since the early 2000s, and the profits have leveled off as well. So if you are a movie producer in this seemingly bleak landscape, you have probably started looking to past successes of Hollywood for inspiration on how to pad your pockets. (INSERT SOME STUFF HERE ABOUT THE GOLDEN AGE OF HOLLYWOOD).
 
-```{r}
+While [box office](/https://www.the-numbers.com/market/) revenues are increasing, the number of ticket sales has been diving since the early 2000s, and the profits have leveled off as well. So if you are a movie producer in this seemingly bleak landscape, you have probably started looking to past Hollywood successes for inspiration on how to pad your pockets.
+
+
+```{r, warning = FALSE, message = FALSE}
 ggplot(data = past_joined, aes(x = production_year, y = avg_genres)) +
   geom_line(size = 1.2) +
   geom_point(aes(x = 2017, y = 2.077276), shape = 20, size = 5, col = "cornflowerblue") +
-  geom_text(aes(label = "2017", x = 2012, y = 1.75), col = "cornflowerblue") +
+  geom_text(aes(label = "2017", x = 2015, y = 1.9), col = "cornflowerblue") +
   geom_point(aes(x = 1947, y = 2.473159), shape = 20, size = 5, col = "cornflowerblue") +
   geom_text(aes(label = "1947", x = 1942, y = 2.25), col = "cornflowerblue") +
   ylab("Average Genres per Movie") +
@@ -93,37 +106,39 @@ ggplot(data = past_joined, aes(x = production_year, y = avg_genres)) +
   scale_x_continuous("", breaks = seq(from = 1880, to = 2020, by = 20))
 ``` 
 
-(SOME GOOD EXPLANATION OF THIS GRAPH)
+This idea of taking cues from the past can help to explain the recent rise in genres per movie. The last steady rise was in the 1920s and 30s, which could be called the Golden Age of cinema. This era had new innovations such as sound and color, which broadened the possibilities for film. This led to classic [box office successes](/http://www.businessinsider.com/the-highest-grossing-movies-of-all-time-adjusted-for-inflation-2016-9) like *Gone With the Wind* and *Snow White and the Seven Dwarfs* - which had 4 and 5 genres, respectively - that still sit comfortably in the top ten highest-grossing adjusted-for-inflation movies of all time. This noticeable trend could be something current producers are trying to imitate, with new groundbreaking innovations such as [CGI](/http://computerstories.net/a-computer-generated-imagery-cgi-history-698) (computer-generated imagery) pushing the boundaries of film in the early 2000s as sound and color did decades before and causing a similar increase in the average number of genres per movie.
 
-Some of the big changes on the graph aren't that surprising when put into historical context. For example, take the steady decline of average genres per movie in the late 1950s and 60s. This is when television became an important form of entertainment, and it uses the same kinds of resources as movies do. With a boom in TV, it makes sense that movies would be less complex for a while.
+Historical context can even explain certain dips in the graph. For example, take the steady decline of average genres per movie in the late 1950s and 60s. This is when [television](/http://www.encyclopedia.com/arts/culture-magazines/hollywood-and-television-1950s-roots-diversification) became an important form of visual entertainment, and it uses the same kinds of resources as movies do. With a boom in TV, it makes sense that movies would be less complex for a while. The downturn in the last couple years can likely be chalked up to how perhaps not all of the data is in yet for those years, since updating information on IMDb takes time. 
 
-The recent rise in genres per movie can also be explained by historical trends as well. The last steady rise in this number was from the 1920s and 30s, which could be called the golden age of cinema, with new innovations such as sound and color. With movie profits being far from on the rise, Hollywood producers could be trying to imitate this success.
+Again, all of this data needs to be understood in context.  We are using the IMDb.com database, which is user-generated. It is likely that in the years since [1990] when IMDB came online, the users generating movie profiles put more time and thought into newer movies, rather than old ones. 
 
-So the number of genre labels each movie gets has been growing overall. And looking at the next few years, that trend is predicted to skyrocket, according to the movies already entered in IMDb.[^2]
+Like our graph, [Richard Burgess and Jonathan Richard](/http://www.slate.com/blogs/browbeat/2012/10/11/film_genre_graph_chart_of_percentages_over_time_goes_viral_on_reddit.html) used the information on IMDb to analyze genres. They looked more specifically at the trends of specific genres over time, finding that westerns have all but disappeared, while horror films are on the rise.
 
-[^2] Any movies that haven't come out yet that are already on IMDb are likely sequels that already have release dates. These data are might not be representative of the trends that we will see once those dates arrive, but it is valuable to see where production studios believe they are headed.
+So generally, the number of genre labels each movie gets has been growing overall. And looking at the next few years, that trend is predicted to skyrocket, according to the movies already entered in IMDb.[^3]
+
+[^3]: Any movies that haven't come out yet that are already on IMDb are films in the works that already have release dates. These data might not be representative of the trends that we will see once those dates arrive, but it is valuable to see where production studios believe they are headed.
 
 
-```{r}
+
+```{r, warning = FALSE, message = FALSE}
 future <- joined %>%
   filter(production_year > 2017)
 print(future)
 ```
 
-So from a marketing point-of-view, it makes sense to try to fit your movie into as many genres as you can to draw in the biggest audience possible to up those ticket sales. More genres equals more money, right? Not necessarily.
+This chart shows the average number of genres for movies that are predicted to come out in the next 8 years. These movies haven’t been seen by a wider audience, so any information on IMDb had to have been entered by people behind the scenes. Looking at these numbers in comparison to the previous graph, it’s clear that the rise since the early 2000s is projected to continue into the future. This would mean that the production side of Hollywood is trying to market movies to a wider audience to boost ticket sales at the box office.
 
+So from a marketing point of view, it makes sense to try to fit your movie into as many genres as you can to draw in the biggest audience possible to up those ticket sales. More genres equals more money, right? Not necessarily.
 
-[^1] This data comes from a combination of [bechdeltest.com](/http://bechdeltest.com/) and [www.the-numbers.com/](/https://www.the-numbers.com/), which we have access to through a previous project. This data is only inclusive of movies on both websites, meaning that it is not all encompassing. On top of that, the only movies in the graphs involving profit must be in both the `bechdel` dataset and the IMDb database. 
-
-
-
-```{r}
+```{r, warning = FALSE, message = FALSE}
 ggplot(joined_bechdel, aes(x = Genres, y = Profit)) +
   geom_jitter() +
-  scale_y_continuous(breaks = seq(from = -500000000, to = 1500000000, by = 500000000), labels = c("-0.5", "0", "0.5", "1.0", "1.5")) +
+    scale_y_continuous(breaks = seq(from = -500000000, to = 1500000000, by = 500000000), labels = c("-0.5", "0", "0.5", "1.0", "1.5")) +
   ylab("Profit in 2013 Dollars (billions)")
+
 ```
 
-If it were true that more genres mean more profit, we would expect to see a much higher profit from the movies that have more genres. Instead, what we see is a peak of profit in the 2-4 genre range. That means that a movie listed as [comedy, romance, and drama](/http://www.imdb.com/title/tt0259446/?ref_=ttls_li_tt) is likely to do better than a movie listed as an [action-comedy-crime-fantasy-horror-mystery-Sci-Fi-thriller](/http://www.imdb.com/title/tt1013860/). 
+If it were true that more genres meant more profit, we would expect to see a much higher profit from the movies that have the most genres. Instead, what we see is a peak of profit in the 2-4 genre range. That means that a movie listed as [comedy, romance, and drama](/http://www.imdb.com/title/tt0259446/?ref_=ttls_li_tt) is likely to do better than a movie listed as an [action-comedy-crime-fantasy-horror-mystery-Sci-Fi-thriller](/http://www.imdb.com/title/tt1013860/). So next time you hit the movie theater, keep in mind that the movie you thought was a drama might be more like a comedy than you would expect.
+
 
 
